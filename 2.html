@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Player example</title>
+	<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<strong>
+	Тесты:
+</strong>
+<ul>
+	<li class="test_list-item"><a href="./index.html">1 тест</a></li>
+	<li class="test_list-item"><a class="active" href="./2.html">2 тест</a></li>
+	<li class="test_list-item"><a href="./3.html">3 тест</a></li>
+	<li class="test_list-item"><a href="./4.html">4 тест</a></li>
+	<li class="test_list-item"><a href="./5.html">5 тест</a></li>
+	<li class="test_list-item"><a href="./6.html">6 тест</a></li>
+	<li class="test_list-item"><a href="./worker/index.html">HTML5 audio + Dedicated Worker</a></li>
+</ul>
+<h1>
+	Тест плеера для браузеров Safari и Chrome в macOS и iOS с использованием библиотеки Sound Manager 2.
+</h1>
+<h3>Описание</h3>
+<p>
+	Для проекта используется библиотека Sound Manager 2.
+</p>
+<p>
+	Данные о следующем треке получаются при обращении приложения к серверу при полном завершении проигрывания текущего трека.
+</p>
+<p>
+	В некоторых случаях в браузере переключение на следующий трек может произойти только на активной вкладке или экране.
+</p>
+<h3>Условия</h3>
+<ol>
+	<li>Используется система macOS или iOS</li>
+	<li>Используется браузер Safari (9 || 10 || 11 || 12) или Chrome</li>
+</ol>
+<h3>Шаги</h3>
+<ol>
+	<li>Нажать кнопку "Начать играть трек" 1 раз</li>
+	<button id='play' style='font-size: 1em;'>Начать играть трек</button>
+	<li>Убедиться что проигрывание началось и появился звук</li>
+	<li>Нажать кнопку "Перемотать ближе к концу" 1 раз</li>
+	<button id='seek' style='font-size: 1em;'>Перемотать ближе к концу</button>
+	<li>Тестирование воспроизведения:</li>
+	<li>Переключить вкладку с приложением на другую (или заблокировать экран для iOS)</li>
+	<li>Дождаться окончания трека в течении 30 секунд</li>
+	<li>(Для браузеров умеющих проигрывать только из активной вкладки) Переключить на вкладку плеера или разблокировать экран</li>
+</ol>
+<h3>Ожидаемый результат</h3>
+<ol>
+	<li>Началось проигрывание следующего трека</li>
+</ol>
+<h3>Лог воспроизведения</h3>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/soundmanager2/2.97a.20150601/script/soundmanager2-jsmin.js"></script>
+<script>
+	let trackId = 0;
+	const tracks = [
+		'https://srv1.mu.fm/music/9/67/muzika_v_mashinu_2018_-_arash_feat_helena_-_dooset_daram_filatov__karas_remix_(zf.fm).mp3',
+		'https://srv1.mu.fm/music/4/ce/hiti_2018_-_willy_william_-_la_la_la.mp3'
+	];
+
+	const writeLog = text => {
+		const newDiv = document.createElement("div");
+		newDiv.style.color = 'red';
+		newDiv.appendChild(document.createTextNode(text));
+		document.body.appendChild(newDiv);
+	};
+
+	let audio1;
+	let id = 0;
+	let isReady = false;
+
+	const createSound = trId => {
+		writeLog('Аудио элемент создан');
+
+		return soundManager.createSound({
+			id: `audio${id}`,
+			url: tracks[trId || trackId],
+			onfinish: function () {
+				id += 1;
+				trackId = +!trackId;
+
+				writeLog('Трек закончился');
+
+				fetch('https://cors-test.appspot.com/test', {credentials: 'include'})
+						.then(() => {
+							writeLog('Данные из сети получены');
+
+							audio1 = createSound(trackId);
+							audio1.play();
+						});
+			}
+		});
+	};
+
+	soundManager.setup({
+		url: 'https://cdnjs.cloudflare.com/ajax/libs/soundmanager2/2.97a.20150601/swf/',
+		flashVersion: 9,
+		preferFlash: false,
+		onready: function () {
+			writeLog('Sound Manager 2 готов для работы');
+			audio1 = createSound();
+
+			isReady = true;
+		}
+	});
+
+	const plB = document.getElementById('play');
+	plB.addEventListener('click', () => {
+		if (isReady) {
+			writeLog('Начато воспроизведение трека');
+
+			audio1.play();
+		}
+	});
+
+	const seekB = document.getElementById('seek');
+	seekB.addEventListener('click', () => {
+		if (isReady) {
+			writeLog('Трек перемотан');
+
+			audio1.setPosition(160000);
+		}
+	});
+</script>
+</body>
+</html>

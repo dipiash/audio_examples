@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Player example</title>
+</head>
+<body>
+<h1>
+	Тест HTML5-плеера c использованием Dedicated Workers
+</h1>
+<h3>Описание</h3>
+<p>
+	Для проекта используется HTML5-плеер (тег &lt;audio&gt;).
+</p>
+<p>
+	Данные о следующем треке получаются при обращении приложения к серверу при полном завершении проигрывания текущего трека.
+</p>
+<p>
+	В некоторых случаях в браузере переключение на следующий трек может произойти только на активной вкладке или экране.
+</p>
+<h3>Условия</h3>
+
+<button id='play' style='font-size: 1em;' onclick="playF()">Играть</button>
+<button id='pause' style='font-size: 1em;' onclick="pauseF()">Пауза</button>
+<button id='skip' style='font-size: 1em;' onclick="skipF()">Пропустить</button>
+<button id='seek' style='font-size: 1em;' onclick="seekF()">Перемотать</button>
+
+<audio id="player_main" src="" controls="true" preload="auto" style="display: none"></audio>
+<audio id="player_precache" src="" controls="true" preload="auto" style="display: none"></audio>
+
+<script src="./audio_main.js"></script>
+</body>
+</html>

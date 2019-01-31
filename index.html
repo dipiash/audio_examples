@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Player example</title>
+	<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<strong>
+	Тесты:
+</strong>
+<ul>
+	<li class="test_list-item"><a class="active" href="./index.html">1 тест</a></li>
+	<li class="test_list-item"><a href="./2.html">2 тест</a></li>
+	<li class="test_list-item"><a href="./3.html">3 тест</a></li>
+	<li class="test_list-item"><a href="./4.html">4 тест</a></li>
+	<li class="test_list-item"><a href="./5.html">5 тест</a></li>
+	<li class="test_list-item"><a href="./6.html">6 тест</a></li>
+	<li class="test_list-item"><a href="./worker/index.html">HTML5 audio + Dedicated Worker</a></li>
+</ul>
+<h1>
+	Тест HTML5-плеера для браузеров Safari и Chrome в macOS и iOS.
+</h1>
+<h3>Описание</h3>
+<p>
+	Для проекта используется HTML5-плеер (тег &lt;audio&gt;).
+</p>
+<p>
+	Данные о следующем треке получаются при обращении приложения к серверу при полном завершении проигрывания текущего трека.
+</p>
+<p>
+	В некоторых случаях в браузере переключение на следующий трек может произойти только на активной вкладке или экране.
+</p>
+<h3>Условия</h3>
+<ol>
+	<li>Используется система macOS или iOS</li>
+	<li>Используется браузер Safari (9 || 10 || 11 || 12) или Chrome</li>
+</ol>
+<h3>Шаги</h3>
+<ol>
+	<li>Нажать кнопку "Начать играть трек" 1 раз</li>
+	<button id='play' style='font-size: 1em;'>Начать играть трек</button>
+	<li>Убедиться что проигрывание началось и появился звук</li>
+	<li>Нажать кнопку "Перемотать ближе к концу" 1 раз</li>
+	<button id='seek' style='font-size: 1em;'>Перемотать ближе к концу</button>
+	<li>Тестирование воспроизведения:</li>
+	<li>Переключить вкладку с приложением на другую (или заблокировать экран для iOS)</li>
+	<li>Дождаться окончания трека в течении 30 секунд</li>
+	<li>(Для браузеров умеющих проигрывать только из активной вкладки) Переключить на вкладку плеера или разблокировать экран</li>
+</ol>
+<h3>Ожидаемый результат</h3>
+<ol>
+	<li>Началось проигрывание следующего трека</li>
+</ol>
+<br/>
+<div id="sm" style="display: none;"></div>
+<h3>Лог воспроизведения</h3>
+
+<script>
+	let trackId = 0;
+	const tracks = [
+		'https://srv1.mu.fm/music/9/67/muzika_v_mashinu_2018_-_arash_feat_helena_-_dooset_daram_filatov__karas_remix_(zf.fm).mp3',
+		'https://srv1.mu.fm/music/4/ce/hiti_2018_-_willy_william_-_la_la_la.mp3'
+	];
+
+	const writeLog = text => {
+		const newDiv = document.createElement("div");
+		newDiv.style.color = 'red';
+		newDiv.appendChild(document.createTextNode(text));
+		document.body.appendChild(newDiv);
+	};
+
+	const audio = document.createElement('audio');
+	audio.id = 'player';
+	audio.controls = 'true';
+	audio.preload = 'auto';
+	audio.onended = () => {
+		writeLog('Трек закончился');
+
+		fetch('https://cors-test.appspot.com/test', {credentials: 'include'})
+				.then(() => {
+					writeLog('Данные из сети получены');
+
+					audio.src = tracks[trackId];
+					audio.play();
+					trackId = +!trackId;
+				});
+	};
+
+	document.getElementById('sm').appendChild(audio);
+
+	const plB = document.getElementById('play');
+	plB.addEventListener('click', () => {
+		writeLog('Начато воспроизведение трека');
+
+		audio.src = tracks[trackId];
+		audio.play();
+		trackId = 1;
+	});
+
+	const seekB = document.getElementById('seek');
+	seekB.addEventListener('click', () => {
+		writeLog('Трек перемотан');
+
+		audio.currentTime = 160;
+	});
+</script>
+</body>
+</html>
