@@ -1,4 +1,4 @@
-# Players
+# Audio players
 
 Example include audio players with next technologies:
 1. HTML5 audio
